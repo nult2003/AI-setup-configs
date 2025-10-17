@@ -1,0 +1,47 @@
+# what is this config's purpose. The python doesn't have a compiler, we can not check the syntax issue. That is reason why I have this config which help we check syntax before running project
+
+- install 3 libraries: ruff, mypy, pytest
+  poetry add --group dev ruff mypy pytest
+
+# run manually:
+poetry run mypy .
+poetry run ruff check .
+poetry run pytest
+
+# run automatically
+Step 1: Create folder tools, and check.py inside it.
+import subprocess, sys
+
+def main():
+    cmds = [
+        ["ruff", "check", "src", "tests"],
+        ["mypy", "src"],
+        ["pytest", "-q"]
+    ]
+    for cmd in cmds:
+        print(f"\n▶ Running: {' '.join(cmd)}")
+        result = subprocess.run(cmd)
+        if result.returncode != 0:
+            print(f"❌ Failed: {' '.join(cmd)}")
+            sys.exit(result.returncode)
+    print("\n✅ All checks passed successfully!")
+
+if __name__ == "__main__":
+    main()
+
+Step 2: add config into the pyproject.toml
+  [tool.mypy]
+mypy_path = "src"
+explicit_package_bases = true
+  
+Step 3: run 2 commands below  
+poetry install
+poetry run check
+
+Finally: If you see the progress as below. which mean it worked
+▶ Running: ruff check .
+▶ Running: mypy .
+▶ Running: pytest
+✅ All checks passed successfully!
+
+
